@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#ffffff; }
+  * { box-sizing:border-box; }
+  @keyframes mrd-spin { to { transform:rotate(360deg); } }
+  @keyframes mrd-float { 0%{ transform:translate(-8%,-4%) scale(1);} 50%{ transform:translate(10%,6%) scale(1.15);} 100%{ transform:translate(-8%,-4%) scale(1);} }
+  @keyframes mrd-float2 { 0%{ transform:translate(6%,4%) scale(1.1);} 50%{ transform:translate(-8%,-8%) scale(1);} 100%{ transform:translate(6%,4%) scale(1.1);} }
+  @keyframes mrd-grain { 0%{transform:translate(0,0)} 10%{transform:translate(-4%,-3%)} 30%{transform:translate(3%,-5%)} 50%{transform:translate(-2%,4%)} 70%{transform:translate(5%,2%)} 90%{transform:translate(-5%,3%)} 100%{transform:translate(0,0)} }
+  @keyframes mrd-hintdot { 0%,100%{ transform:translateY(0); opacity:.3;} 50%{ transform:translateY(7px); opacity:1;} }
+  @keyframes mrd-trace { to { stroke-dashoffset:-1; } }
+  @media (max-width:760px){
+    .mrd-hero{ padding-top:8vh !important; }
+    .mrd-side{ left:5vw !important; right:5vw !important; top:auto !important; bottom:6vh !important; max-width:none !important; text-align:center !important; }
+    .mrd-top{ top:auto !important; bottom:6vh !important; }
+    .mrd-lens{ left:4vw !important; right:4vw !important; top:auto !important; bottom:3vh !important; width:auto !important; transform:none !important; gap:7px !important; }
+  }
+</style>
+</helmet>
+<div ref="{{ setRoot }}" style="position:relative; width:100%; background:#ffffff; color:#14171c; font-family:'Poppins',system-ui,sans-serif;">
+
+  <div style="position:fixed; inset:0; z-index:0; pointer-events:none; background:radial-gradient(130% 100% at 50% 0%, #ffffff 0%, #f7f9fc 55%, #eef2f7 100%);"></div>
+
+
+  <canvas ref="{{ setCanvas }}" style="position:fixed; inset:0; width:100vw; height:100vh; z-index:3; display:block;"></canvas>
+
+  <div ref="{{ setHero }}" class="mrd-hero" style="position:fixed; top:0; left:0; right:0; z-index:4; pointer-events:none; display:flex; flex-direction:column; align-items:center; padding-top:11vh; text-align:center; opacity:0;">
+    <div style="font-size:12px; letter-spacing:0.42em; color:#c22027; font-weight:500; text-transform:uppercase; padding-left:0.42em;">EZContacts</div>
+    <div style="font-family:'Poppins',sans-serif; font-weight:500; font-size:clamp(56px,9vw,132px); line-height:0.98; margin-top:14px; color:#14171c;">Model 01</div>
+    <div style="font-size:15px; color:#5b636e; margin-top:16px; letter-spacing:0.02em;">Handcrafted Italian acetate</div>
+  </div>
+
+  <div ref="{{ setHint }}" style="position:fixed; bottom:34px; left:0; right:0; z-index:4; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:9px; opacity:0;">
+    <div style="font-size:11px; letter-spacing:0.34em; color:#8a929c; text-transform:uppercase;">Scroll down</div>
+    <div style="width:1px; height:26px; background:linear-gradient(#c22027, rgba(194,32,39,0)); animation:mrd-hintdot 1.8s ease-in-out infinite;"></div>
+  </div>
+
+  <div ref="{{ setS1 }}" class="mrd-side" style="position:fixed; top:50%; left:7vw; transform:translateY(-50%); z-index:4; pointer-events:none; max-width:340px; opacity:0;">
+    <div style="font-family:'Poppins',sans-serif; font-size:40px; color:#c22027; line-height:1;">01</div>
+    <div style="font-family:'Poppins',sans-serif; font-weight:500; font-size:38px; line-height:1.06; margin-top:10px; color:#14171c;">Italian&nbsp;Acetate</div>
+    <div style="font-size:15px; line-height:1.65; color:#5b636e; margin-top:16px;">Each frame is milled from a solid block of plant-based Italian acetate, then polished by hand — a warm, deep luster that never fades.</div>
+  </div>
+
+  <div ref="{{ setS2 }}" class="mrd-side" style="position:fixed; top:50%; right:7vw; transform:translateY(-50%); z-index:4; pointer-events:none; max-width:340px; text-align:right; opacity:0;">
+    <div style="font-family:'Poppins',sans-serif; font-size:40px; color:#c22027; line-height:1;">02</div>
+    <div style="font-family:'Poppins',sans-serif; font-weight:500; font-size:38px; line-height:1.06; margin-top:10px; color:#14171c;">UV400 Lenses</div>
+    <div style="font-size:15px; line-height:1.65; color:#5b636e; margin-top:16px;">Mineral glass with an anti-reflective coating and full UV400 protection. True clarity, no distortion, in any light.</div>
+  </div>
+
+  <div ref="{{ setLensPanel }}" class="mrd-lens" style="position:fixed; top:50%; right:6vw; transform:translate(44px,-50%); z-index:6; width:322px; opacity:0; pointer-events:none; display:flex; flex-direction:column; gap:9px;">
+    <div style="font-size:12px; letter-spacing:0.32em; color:#c22027; text-transform:uppercase;">03 — Choose your lens</div>
+    <div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:24px; line-height:1.12; color:#14171c; margin-bottom:4px;">Five tints, one frame</div>
+    <div ref="{{ setOpt0 }}" onClick="{{ pick0 }}" style="pointer-events:auto; cursor:pointer; display:flex; align-items:center; gap:13px; padding:10px 12px; border:1.5px solid rgba(20,23,28,0.12); border-radius:12px; background:#ffffff; box-shadow:0 2px 10px rgba(20,23,28,0.05);">
+      <div style="display:flex; gap:3px;"><span style="width:14px; height:20px; border-radius:7px; background:rgba(208,223,240,0.7); border:1px solid rgba(20,23,28,0.14);"></span><span style="width:14px; height:20px; border-radius:7px; background:rgba(208,223,240,0.7); border:1px solid rgba(20,23,28,0.14);"></span><span style="width:14px; height:20px; border-radius:7px; background:rgba(208,223,240,0.7); border:1px solid rgba(20,23,28,0.14);"></span></div>
+      <div style="flex:1;"><div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#14171c;">Clear</div><div style="font-size:11px; color:#5b636e; line-height:1.3;">Everyday optical · anti-glare</div></div>
+      <div data-check style="width:19px; height:19px; border-radius:50%; background:#c22027; color:#fff; font-size:11px; line-height:19px; text-align:center; opacity:0;">✓</div>
+    </div>
+    <div ref="{{ setOpt1 }}" onClick="{{ pick1 }}" style="pointer-events:auto; cursor:pointer; display:flex; align-items:center; gap:13px; padding:10px 12px; border:1.5px solid rgba(20,23,28,0.12); border-radius:12px; background:#ffffff; box-shadow:0 2px 10px rgba(20,23,28,0.05);">
+      <div style="display:flex; gap:3px;"><span style="width:14px; height:20px; border-radius:7px; background:#23262c;"></span><span style="width:14px; height:20px; border-radius:7px; background:#23262c;"></span><span style="width:14px; height:20px; border-radius:7px; background:#23262c;"></span></div>
+      <div style="flex:1;"><div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#14171c;">Solar Black</div><div style="font-size:11px; color:#5b636e; line-height:1.3;">Dark tint · full glare cut</div></div>
+      <div data-check style="width:19px; height:19px; border-radius:50%; background:#c22027; color:#fff; font-size:11px; line-height:19px; text-align:center; opacity:0;">✓</div>
+    </div>
+    <div ref="{{ setOpt2 }}" onClick="{{ pick2 }}" style="pointer-events:auto; cursor:pointer; display:flex; align-items:center; gap:13px; padding:10px 12px; border:1.5px solid rgba(20,23,28,0.12); border-radius:12px; background:#ffffff; box-shadow:0 2px 10px rgba(20,23,28,0.05);">
+      <div style="display:flex; gap:3px;"><span style="width:14px; height:20px; border-radius:7px; background:#d68a3a;"></span><span style="width:14px; height:20px; border-radius:7px; background:#d68a3a;"></span><span style="width:14px; height:20px; border-radius:7px; background:#d68a3a;"></span></div>
+      <div style="flex:1;"><div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#14171c;">Amber</div><div style="font-size:11px; color:#5b636e; line-height:1.3;">Warm contrast · haze &amp; sport</div></div>
+      <div data-check style="width:19px; height:19px; border-radius:50%; background:#c22027; color:#fff; font-size:11px; line-height:19px; text-align:center; opacity:0;">✓</div>
+    </div>
+    <div ref="{{ setOpt3 }}" onClick="{{ pick3 }}" style="pointer-events:auto; cursor:pointer; display:flex; align-items:center; gap:13px; padding:10px 12px; border:1.5px solid rgba(20,23,28,0.12); border-radius:12px; background:#ffffff; box-shadow:0 2px 10px rgba(20,23,28,0.05);">
+      <div style="display:flex; gap:3px;"><span style="width:14px; height:20px; border-radius:7px; background:linear-gradient(140deg,#5f95db,#2d5da0);"></span><span style="width:14px; height:20px; border-radius:7px; background:linear-gradient(140deg,#5f95db,#2d5da0);"></span><span style="width:14px; height:20px; border-radius:7px; background:linear-gradient(140deg,#5f95db,#2d5da0);"></span></div>
+      <div style="flex:1;"><div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#14171c;">Blue Mirror</div><div style="font-size:11px; color:#5b636e; line-height:1.3;">Reflective · bold, high-UV</div></div>
+      <div data-check style="width:19px; height:19px; border-radius:50%; background:#c22027; color:#fff; font-size:11px; line-height:19px; text-align:center; opacity:0;">✓</div>
+    </div>
+    <div ref="{{ setOpt4 }}" onClick="{{ pick4 }}" style="pointer-events:auto; cursor:pointer; display:flex; align-items:center; gap:13px; padding:10px 12px; border:1.5px solid rgba(20,23,28,0.12); border-radius:12px; background:#ffffff; box-shadow:0 2px 10px rgba(20,23,28,0.05);">
+      <div style="display:flex; gap:3px;"><span style="width:14px; height:20px; border-radius:7px; background:#cf7ea0;"></span><span style="width:14px; height:20px; border-radius:7px; background:#cf7ea0;"></span><span style="width:14px; height:20px; border-radius:7px; background:#cf7ea0;"></span></div>
+      <div style="flex:1;"><div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:14px; color:#14171c;">Rose</div><div style="font-size:11px; color:#5b636e; line-height:1.3;">Soft warmth · flattering light</div></div>
+      <div data-check style="width:19px; height:19px; border-radius:50%; background:#c22027; color:#fff; font-size:11px; line-height:19px; text-align:center; opacity:0;">✓</div>
+    </div>
+  </div>
+
+  <div ref="{{ setFinal }}" style="position:fixed; left:0; right:0; bottom:10vh; z-index:5; pointer-events:none; display:flex; flex-direction:column; align-items:center; text-align:center; opacity:0;">
+    <div style="font-size:12px; letter-spacing:0.38em; color:#c22027; text-transform:uppercase;">Cased — ready for the road</div>
+    <div style="font-family:'Poppins',sans-serif; font-weight:500; font-size:clamp(40px,6vw,80px); line-height:1; margin-top:12px; color:#14171c;">EZContacts</div>
+    <a ref="{{ setCta }}" href="#" style="margin-top:26px; pointer-events:auto; display:inline-flex; align-items:center; gap:12px; padding:15px 30px; background:#c22027; color:#ffffff; text-decoration:none; font-size:14px; letter-spacing:0.06em; border-radius:2px; box-shadow:0 14px 34px rgba(36,31,26,0.22);">Pre-order · $189</a>
+  </div>
+
+  <div ref="{{ setLoader }}" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:20; pointer-events:none; background:transparent;">
+    <svg viewBox="-180 -95 360 190" fill="none" style="position:absolute; left:50%; top:50%; width:18vh; height:9.5vh; transform:translate(-50%,-50%); overflow:visible;">
+      <g stroke="#cdd4de" stroke-opacity="0.4" fill="none" stroke-width="7.5" stroke-linecap="round">
+        <rect x="-134" y="-42.5" width="108" height="85" rx="28"></rect>
+        <rect x="26" y="-42.5" width="108" height="85" rx="28"></rect>
+        <path d="M -28 -27 L 28 -27"></path>
+      </g>
+      <path d="M -28 -27 L -26 -14.5 L -26 14.5 Q -26 42.5 -54 42.5 L -106 42.5 Q -134 42.5 -134 14.5 L -134 -14.5 Q -134 -42.5 -106 -42.5 L -54 -42.5 Q -26 -42.5 -28 -27 L 28 -27 Q 26 -42.5 54 -42.5 L 106 -42.5 Q 134 -42.5 134 -14.5 L 134 14.5 Q 134 42.5 106 42.5 L 54 42.5 Q 26 42.5 26 14.5 L 26 -14.5 L 28 -27 L -28 -27 Z" pathLength="1" fill="none" stroke="#c22027" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:0.13 0.87; stroke-dashoffset:0; filter:drop-shadow(0 0 4px rgba(194,32,39,0.5)); animation:mrd-trace 3.2s linear infinite;"></path>
+    </svg>
+    <div style="position:absolute; left:0; right:0; top:63%; text-align:center; font-size:9px; letter-spacing:0.42em; color:#c22027; opacity:0.7; text-transform:uppercase;">EZContacts</div>
+  </div>
+
+  <div ref="{{ setS3 }}" class="mrd-top" style="position:fixed; top:14vh; left:0; right:0; z-index:5; pointer-events:none; display:flex; justify-content:center; opacity:0;">
+    <div style="text-align:center; max-width:560px;">
+      <div style="font-size:12px; letter-spacing:0.34em; color:#c22027; text-transform:uppercase;">04 — Titanium Hinges</div>
+      <div style="font-family:'Poppins',sans-serif; font-weight:600; font-size:clamp(30px,4.4vw,52px); line-height:1.08; margin-top:12px; color:#14171c;">Built to outlast trends</div>
+    </div>
+  </div>
+
+  <div ref="{{ setSpacer }}" style="position:relative; z-index:1; width:100%; height:720vh; pointer-events:none;"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  setRoot = el => { this.root = el; };
+  setCanvas = el => { this.canvas = el; };
+  setSpacer = el => { this.spacer = el; };
+  setHero = el => { this.hero = el; };
+  setHint = el => { this.hint = el; };
+  setS1 = el => { this.s1 = el; };
+  setS2 = el => { this.s2 = el; };
+  setS3 = el => { this.s3 = el; };
+  setFinal = el => { this.final = el; };
+  setCta = el => { this.cta = el; };
+  setLoader = el => { this.loader = el; };
+  setLensPanel = el => { this.lensPanel = el; };
+  optEls = [];
+  setOpt0 = el => { this.optEls[0]=el; };
+  setOpt1 = el => { this.optEls[1]=el; };
+  setOpt2 = el => { this.optEls[2]=el; };
+  setOpt3 = el => { this.optEls[3]=el; };
+  setOpt4 = el => { this.optEls[4]=el; };
+  pick0 = () => this.setLens(0);
+  pick1 = () => this.setLens(1);
+  pick2 = () => this.setLens(2);
+  pick3 = () => this.setLens(3);
+  pick4 = () => this.setLens(4);
+  setLens(n){
+    this.lensChoice=n; this.lensTarget=this.lensDefs?this.lensDefs[n]:null; this._lensAnim=true;
+    (this.optEls||[]).forEach((el,i)=>{ if(!el)return; const on=i===n;
+      el.style.borderColor = on?'#c22027':'rgba(20,23,28,0.12)';
+      el.style.background = on?'rgba(194,32,39,0.05)':'#ffffff';
+      el.style.boxShadow = on?'0 10px 26px rgba(194,32,39,0.16)':'0 2px 10px rgba(20,23,28,0.05)';
+      const ck=el.querySelector('[data-check]'); if(ck) ck.style.opacity=on?'1':'0';
+    });
+  }
+
+  renderVals() {
+    return {
+      setRoot:this.setRoot, setCanvas:this.setCanvas, setSpacer:this.setSpacer,
+      setHero:this.setHero, setHint:this.setHint, setS1:this.setS1, setS2:this.setS2,
+      setS3:this.setS3, setFinal:this.setFinal, setCta:this.setCta,
+      setLoader:this.setLoader,
+      setLensPanel:this.setLensPanel, setOpt0:this.setOpt0, setOpt1:this.setOpt1, setOpt2:this.setOpt2, setOpt3:this.setOpt3, setOpt4:this.setOpt4,
+      pick0:this.pick0, pick1:this.pick1, pick2:this.pick2, pick3:this.pick3, pick4:this.pick4
+    };
+  }
+
+  componentDidMount() {
+    this.sp = 0; this.target = 0; this.introT = 0; this.revealAt = 0; this.phase = 'loading';
+    this._wait = setInterval(() => {
+      if (window.THREE && this.canvas) { clearInterval(this._wait); this.init(); }
+    }, 40);
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this._raf);
+    clearInterval(this._wait);
+    window.removeEventListener('resize', this._onResize);
+  }
+
+  // ---------- helpers ----------
+  clamp(x,a,b){ return Math.max(a, Math.min(b, x)); }
+  smooth(x){ x=this.clamp(x,0,1); return x*x*(3-2*x); }
+  lerp(a,b,t){ return a+(b-a)*t; }
+  track(stops,p){
+    if(p<=stops[0][0]) return stops[0][1];
+    for(let i=0;i<stops.length-1;i++){
+      const a=stops[i], b=stops[i+1];
+      if(p<=b[0]){ const t=this.smooth((p-a[0])/(b[0]-a[0])); return this.lerp(a[1],b[1],t); }
+    }
+    return stops[stops.length-1][1];
+  }
+  band(p,a,b,c,d){ return this.smooth((p-a)/(b-a)) * (1-this.smooth((p-c)/(d-c))); }
+
+  roundedRect(w,h,r){
+    const T=window.THREE, s=new T.Shape();
+    const x=-w/2, y=-h/2;
+    s.moveTo(x+r,y);
+    s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r);
+    s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r);
+    s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y);
+    return s;
+  }
+  roundedBoxGeo(w,h,d,r){
+    const T=window.THREE;
+    const g=new T.ExtrudeGeometry(this.roundedRect(w,h,r), {depth:d, bevelEnabled:true, bevelThickness:Math.min(0.04,r*0.5), bevelSize:Math.min(0.04,r*0.5), bevelSegments:2, curveSegments:20});
+    g.center(); return g;
+  }
+
+  makeGlasses(){
+    const T=window.THREE, g=new T.Group();
+    const frameMat=new T.MeshPhysicalMaterial({color:0x090a0c, roughness:0.34, metalness:0.0, clearcoat:0.9, clearcoatRoughness:0.22});
+    const gold=new T.MeshStandardMaterial({color:0xb7bcc6, roughness:0.28, metalness:1.0});
+    const lensMat=new T.MeshPhysicalMaterial({color:0x8b96a6, roughness:0.06, metalness:0.0, transparent:true, opacity:0.4, clearcoat:1.0, clearcoatRoughness:0.06, reflectivity:0.6, side:T.DoubleSide});
+    this.frameMat=frameMat; this.goldMat=gold; this.lensMat=lensMat;
+    this.paleCol=new T.Color(0xccd3dd); this.acetateCol=new T.Color(0x090a0c); this.goldCol=new T.Color(0xb7bcc6);
+    frameMat.transparent=true; frameMat.opacity=0;
+    gold.transparent=true; gold.opacity=0;
+
+    const rimGeo=new T.ExtrudeGeometry(
+      (()=>{ const o=this.roundedRect(1.16,0.92,0.3); o.holes.push(this.roundedRect(1.0,0.78,0.26)); return o; })(),
+      {depth:0.1, bevelEnabled:true, bevelThickness:0.022, bevelSize:0.022, bevelSegments:2, curveSegments:26});
+    rimGeo.center();
+    const lensGeo=new T.ShapeGeometry(this.roundedRect(1.0,0.78,0.26));
+
+    [-0.8,0.8].forEach(x=>{
+      const rim=new T.Mesh(rimGeo,frameMat); rim.position.set(x,0,0); g.add(rim);
+      const lens=new T.Mesh(lensGeo,lensMat); lens.position.set(x,0,0.01); g.add(lens);
+    });
+
+    const bridge=new T.Mesh(this.roundedBoxGeo(0.46,0.08,0.09,0.035),frameMat);
+    bridge.position.set(0,0.27,0.01); g.add(bridge);
+
+    const pivots=[];
+    [-1,1].forEach(side=>{
+      const hingeX=1.34*side;
+      const hinge=new T.Mesh(new T.CylinderGeometry(0.045,0.045,0.16,18),gold);
+      hinge.rotation.z=Math.PI/2; hinge.position.set(hingeX,0.14,0.02); g.add(hinge);
+
+      const pivot=new T.Group(); pivot.position.set(hingeX,0.14,0.0);
+      // slender arm: thin in X (thickness), taller in Y (broad face vertical), long in -Z
+      const temple=new T.Mesh(this.roundedBoxGeo(0.05,0.15,2.0,0.025),frameMat);
+      temple.position.set(0,0.01,-1.0);
+      pivot.add(temple);
+      const tip=new T.Mesh(this.roundedBoxGeo(0.06,0.17,0.44,0.04),frameMat);
+      tip.rotation.x=-0.2; tip.position.set(0,-0.05,-1.98);
+      pivot.add(tip);
+      g.add(pivot); pivots.push({side,pivot});
+    });
+
+    g.userData.pivots=pivots;
+    return g;
+  }
+
+  makeCase(){
+    const T=window.THREE, c=new T.Group();
+    const shell=new T.MeshPhysicalMaterial({color:0x18181b, roughness:0.45, metalness:0.05, clearcoat:0.4, clearcoatRoughness:0.4});
+    const liner=new T.MeshStandardMaterial({color:0x171b22, roughness:0.95, metalness:0.0});
+
+    const W=3.0, D=1.5;
+    // hollow open-top walls (a ring) so the cavity is empty
+    const wallShape=this.roundedRect(W,D,0.4);
+    wallShape.holes.push(this.roundedRect(W-0.34,D-0.34,0.28));
+    const wallGeo=new T.ExtrudeGeometry(wallShape,{depth:0.46,bevelEnabled:true,bevelThickness:0.02,bevelSize:0.02,bevelSegments:2,curveSegments:22});
+    wallGeo.center();
+    const walls=new T.Mesh(wallGeo,shell);
+    walls.rotation.x=-Math.PI/2; walls.position.set(0,-1.7,0); c.add(walls);
+    // velvet floor set low inside the cavity
+    const floor=new T.Mesh(this.roundedBoxGeo(W-0.36,D-0.36,0.07,0.24),liner);
+    floor.rotation.x=-Math.PI/2; floor.position.set(0,-1.88,0); c.add(floor);
+    // outer bottom cap
+    const base=new T.Mesh(this.roundedBoxGeo(W,D,0.1,0.4),shell);
+    base.rotation.x=-Math.PI/2; base.position.set(0,-1.94,0); c.add(base);
+    // lid hinged at the back top edge
+    const lidPivot=new T.Group(); lidPivot.position.set(0,-1.46,-(D/2-0.03));
+    const lid=new T.Mesh(this.roundedBoxGeo(W,D,0.14,0.4),shell);
+    lid.rotation.x=-Math.PI/2; lid.position.set(0,0.07,(D/2-0.03)); lidPivot.add(lid);
+    c.add(lidPivot);
+
+    c.userData.lidPivot=lidPivot;
+    c.userData.mats=[shell,liner];
+    return c;
+  }
+
+  init(){
+    const T=window.THREE;
+    const r=this.renderer=new T.WebGLRenderer({canvas:this.canvas, antialias:true, alpha:true, preserveDrawingBuffer:false});
+    window.__mrd=this;
+    r.setClearColor(0x000000,0);
+    r.outputEncoding=T.sRGBEncoding;
+    const scene=this.scene=new T.Scene();
+    const cam=this.cam=new T.PerspectiveCamera(35,1,0.1,100);
+    cam.position.set(0,0,5.4);
+
+    scene.add(new T.HemisphereLight(0xffffff,0x808088,0.3));
+    const key=new T.DirectionalLight(0xffffff,1.15); key.position.set(3,4.5,5); scene.add(key);
+    const warm=new T.PointLight(0xffffff,0.22,50); warm.position.set(-4,1.5,3); scene.add(warm);
+    const rim=new T.PointLight(0xffffff,0.55,50); rim.position.set(0,2,-4); scene.add(rim);
+    const spec=new T.PointLight(0xffffff,0.6,30); spec.position.set(1.5,3,4); scene.add(spec);
+
+    this.glasses=this.makeGlasses(); scene.add(this.glasses);
+    this.caseG=this.makeCase(); scene.add(this.caseG);
+
+    this.lensDefs=[
+      {col:new T.Color(0xd6e2f0), op:0.14},
+      {col:new T.Color(0x23262c), op:0.8},
+      {col:new T.Color(0xd68a3a), op:0.52},
+      {col:new T.Color(0x3f78c0), op:0.56},
+      {col:new T.Color(0xcf7ea0), op:0.5}
+    ];
+    this.lensChoice=0; this.lensColorCur=this.lensDefs[0].col.clone(); this.lensOpacityCur=this.lensDefs[0].op; this.lensTarget=this.lensDefs[0];
+    this.setLens(0);
+
+    this._onResize=()=>{
+      const w=window.innerWidth,h=window.innerHeight;
+      this.isMobile = w < 760;
+      cam.position.z = this.isMobile ? 6.6 : 5.4;
+      r.setPixelRatio(Math.min(this.isMobile?1.75:2,window.devicePixelRatio||1));
+      r.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();
+      this._maxScroll = Math.max(1,(document.documentElement.scrollHeight||document.body.scrollHeight||1)-h);
+      this._resized=true;
+    };
+    this._onResize(); window.addEventListener('resize',this._onResize);
+    this._mx=0; this._my=0;
+    window.addEventListener('mousemove',(e)=>{ this._mx=(e.clientX/window.innerWidth)*2-1; this._my=(e.clientY/window.innerHeight)*2-1; });
+
+    setTimeout(()=>{ this.phase='reveal'; this.revealAt=performance.now(); }, 450);
+
+    this.loop=this.loop.bind(this);
+    this._raf=requestAnimationFrame(this.loop);
+  }
+
+  maxScroll(){ return Math.max(1, (document.documentElement.scrollHeight||document.body.scrollHeight) - window.innerHeight); }
+
+  loop(now){
+    this._raf=requestAnimationFrame(this.loop);
+    const T=window.THREE;
+
+    this.target = (this.forceP!=null) ? this.forceP : this.clamp((window.scrollY||window.pageYOffset||0)/(this._maxScroll||1),0,1);
+    // smooth inertia
+    this.sp+=(this.target-this.sp)*0.075;
+    const p=this.sp;
+
+    // intro: small glasses loader; model materializes in the same pale color, then colorizes + grows out
+    let modelOp=0, growT=0, revPose=0, matBlend=0;
+    if(this.phase==='reveal'){
+      const c=now-this.revealAt;
+      modelOp=this.clamp((c-150)/350,0,1);
+      matBlend=this.smooth(this.clamp((c-520)/1100,0,1));
+      const e=this.clamp((c-560)/1250,0,1); growT=1-Math.pow(1-e,3);
+      revPose=this.smooth(this.clamp((c-620)/1200,0,1));
+      if(this.loader){ this.loader.style.opacity=String(this.clamp(1-(c-150)/430,0,1)); }
+      if(c>=1950){ this.phase='scroll'; if(this.loader) this.loader.style.display='none'; }
+    } else if(this.phase==='scroll'){ modelOp=1; growT=1; revPose=1; matBlend=1; if(this.loader&&this.loader.style.display!=='none') this.loader.style.display='none'; }
+    // material: flat pale (matches the silhouette) -> full acetate as it grows
+    if(this.frameMat){
+      this.frameMat.emissive.copy(this.paleCol); this.frameMat.emissiveIntensity=(1-matBlend);
+      this.frameMat.color.copy(this.acetateCol).multiplyScalar(matBlend);
+      this.frameMat.roughness=1-0.74*matBlend; this.frameMat.clearcoat=0.9*matBlend;
+      this.frameMat.transparent=modelOp<1; this.frameMat.opacity=modelOp;
+    }
+    if(this.goldMat){
+      this.goldMat.emissive.copy(this.paleCol); this.goldMat.emissiveIntensity=(1-matBlend)*0.9;
+      this.goldMat.color.copy(this.goldCol).multiplyScalar(matBlend);
+      this.goldMat.metalness=matBlend; this.goldMat.roughness=1-0.72*matBlend;
+      this.goldMat.transparent=modelOp<1; this.goldMat.opacity=modelOp;
+    }
+    if(this.lensMat && this.lensTarget){
+      const t=this.lensTarget;
+      this.lensColorCur.lerp(t.col,0.16);
+      this.lensOpacityCur += (t.op-this.lensOpacityCur)*0.16;
+      this.lensMat.color.copy(this.lensColorCur);
+      this.lensMat.opacity=this.lensOpacityCur*matBlend;
+      const d=Math.abs(this.lensColorCur.r-t.col.r)+Math.abs(this.lensColorCur.g-t.col.g)+Math.abs(this.lensColorCur.b-t.col.b)+Math.abs(this.lensOpacityCur-t.op);
+      this._lensAnim = d>0.004;
+    }
+    const intro=this.smooth(growT);
+
+    // ----- glasses pose -----
+    const posX=this.track([[0,0],[0.12,1.15],[0.30,1.15],[0.345,-1.15],[0.52,-1.15],[0.60,-0.5],[0.78,-0.5],[0.86,0],[1,0]],p);
+    const posY=this.track([[0,-0.2],[0.55,-0.1],[0.80,0.05],[0.90,0.05],[0.96,-0.7],[1,-1.78]],p);
+    const rotY=this.track([[0,-0.4],[0.12,0.25],[0.30,3.1],[0.52,5.9],[0.60,6.283],[0.70,6.283],[1,6.283]],p);
+    const rotX=this.track([[0,0.14],[0.30,-0.08],[0.60,0.0],[0.90,0.05],[0.96,1.45],[1,1.55]],p);
+    const fold=this.track([[0,0],[0.90,0],[0.97,1],[1,1]],p);
+
+    const mob=this.isMobile;
+    // mobile: centered (no lateral swing), smaller, lifted into the upper band during the text sections
+    const lift = mob ? 1.0*this.band(p,0.06,0.14,0.88,0.94) : 0;
+    const baseScale = mob ? 0.45 : 0.8;
+    this._mxs=(this._mxs||0)+(((this._mx||0))-(this._mxs||0))*0.05;
+    this._mys=(this._mys||0)+(((this._my||0))-(this._mys||0))*0.05;
+    const pFade=(1-this.smooth((p-0.84)/0.10))*growT;
+    const parX=this._mxs*0.16*pFade, parY=-this._mys*0.10*pFade;
+    const g=this.glasses;
+    g.position.set((mob?0:posX)*revPose, (posY+lift)*growT, 0);
+    g.rotation.set(rotX*revPose+parY, rotY*revPose+parX, 0);
+    const Sc=0.16;
+    g.scale.setScalar(Sc + (baseScale-Sc)*growT);
+    g.visible=modelOp>0.001;
+    g.userData.pivots.forEach(({side,pivot})=>{ pivot.rotation.y=(fold*1.46)*side; });
+
+    // ----- camera pan toward case at end -----
+    this.cam.position.y=this.track([[0,0],[0.90,0],[1, mob?0.55:0.4]],p);
+    const tgtY=this.track([[0,0],[0.90,0],[1,-1.95]],p);
+    this.cam.lookAt(0,tgtY,0);
+
+    // ----- case -----
+    const cAppear=this.smooth((p-0.90)/0.07);
+    const cs=(0.6+0.4*cAppear)*(this.isMobile?0.62:1);
+    this.caseG.scale.setScalar(cs);
+    this.caseG.visible=cAppear>0.001;
+    this.caseG.userData.mats.forEach(m=>{ m.transparent=true; m.opacity=cAppear; });
+    const lid=this.track([[0,-2.2],[0.95,-2.2],[0.975,-1.4],[0.995,-0.03],[1,-0.03]],p);
+    this.caseG.userData.lidPivot.rotation.x=lid;
+
+    // ----- overlays -----
+    const heroOp=(1-this.smooth((p-0.02)/0.08))*intro;
+    this.setStyle(this.hero, heroOp, 0, (1-heroOp)*-18);
+    this.setStyle(this.hint, (1-this.smooth((p)/0.05))*intro, 0, 0);
+    const o1=this.band(p,0.10,0.155,0.26,0.31); this.setStyle(this.s1,o1,(1-o1)*-46,0,-50);
+    const o2=this.band(p,0.345,0.40,0.48,0.53); this.setStyle(this.s2,o2,(1-o2)*46,0,-50);
+    const oL=this.band(p,0.52,0.60,0.72,0.78);
+    if(this.lensPanel){ this.lensPanel.style.opacity=oL.toFixed(3); this.lensPanel.style.transform='translate('+((1-oL)*44).toFixed(1)+'px,-50%)'; this.lensPanel.style.visibility=oL<0.01?'hidden':'visible'; }
+    const o3=this.band(p,0.80,0.84,0.89,0.93); this.setStyle(this.s3,o3,0,(1-o3)*-16);
+    const of=this.smooth((p-0.955)/0.045); this.setStyle(this.final,of,0,(1-of)*22);
+
+    const need = (this.phase!=='scroll') || this._resized || this._lensAnim || (pFade>0.002 && (Math.abs((this._mx||0)-this._mxs)>0.0012 || Math.abs((this._my||0)-this._mys)>0.0012)) || Math.abs(this.sp-(this._lastSp==null?-1:this._lastSp))>0.00012;
+    if(need){ this.renderer.render(this.scene,this.cam); this._lastSp=this.sp; this._resized=false; }
+  }
+
+  setStyle(el,op,tx,ty,baseY){
+    if(!el) return;
+    el.style.opacity=op.toFixed(3);
+    const by = baseY!==undefined ? baseY : 0;
+    el.style.transform=`translate(${tx||0}px, ${(ty||0)+by}px)`;
+    el.style.visibility = op<0.01 ? 'hidden' : 'visible';
+  }
+}
+</script>
+</body>
+</html>
