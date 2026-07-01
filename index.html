@@ -377,12 +377,15 @@ class Component extends DCLogic {
 
     // ----- glasses pose -----
     const posX=this.track([[0,0],[0.12,1.15],[0.30,1.15],[0.345,-1.15],[0.52,-1.15],[0.60,-0.5],[0.78,-0.5],[0.86,0],[1,0]],p);
-    const posY=this.track([[0,-0.2],[0.55,-0.1],[0.80,0.05],[0.90,0.05],[0.96,-0.7],[1,-1.78]],p);
+    const mob=this.isMobile;
+    // final descent into the case must match the (smaller, higher) case on mobile so the glasses stay inside it
+    const deepMid = mob ? -0.44 : -0.7;
+    const deepEnd = mob ? -1.06 : -1.78;
+    const posY=this.track([[0,-0.2],[0.55,-0.1],[0.80,0.05],[0.90,0.05],[0.96,deepMid],[1,deepEnd]],p);
     const rotY=this.track([[0,-0.4],[0.12,0.25],[0.30,3.1],[0.52,5.9],[0.60,6.283],[0.70,6.283],[1,6.283]],p);
     const rotX=this.track([[0,0.14],[0.30,-0.08],[0.60,0.0],[0.90,0.05],[0.96,1.45],[1,1.55]],p);
     const fold=this.track([[0,0],[0.90,0],[0.97,1],[1,1]],p);
 
-    const mob=this.isMobile;
     // mobile: centered (no lateral swing), smaller, lifted into the upper band during the text sections
     const lift = mob ? 1.0*this.band(p,0.06,0.14,0.88,0.94) : 0;
     const baseScale = mob ? 0.45 : 0.8;
@@ -399,8 +402,8 @@ class Component extends DCLogic {
     g.userData.pivots.forEach(({side,pivot})=>{ pivot.rotation.y=(fold*1.46)*side; });
 
     // ----- camera pan toward case at end -----
-    this.cam.position.y=this.track([[0,0],[0.90,0],[1, mob?0.55:0.4]],p);
-    const tgtY=this.track([[0,0],[0.90,0],[1,-1.95]],p);
+    this.cam.position.y=this.track([[0,0],[0.90,0],[1, mob?0.2:0.4]],p);
+    const tgtY=this.track([[0,0],[0.90,0],[1, mob?-1.16:-1.95]],p);
     this.cam.lookAt(0,tgtY,0);
 
     // ----- case -----
